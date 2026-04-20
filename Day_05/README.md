@@ -1,9 +1,11 @@
-# Day 5: File Signatures & Magic Bytes
+# Day 5: Payload Analysis & Magic Bytes
 
-## The Objective
-Identify disguised executables by analyzing their raw hexadecimal headers (Magic Bytes) rather than trusting their file extensions.
+## The Investigation Continues
+In Days 1 through 4, we intercepted the malware's network traffic, hooked its library calls, extracted its static flags, and monitored its system-level attempts to steal `/etc/shadow`. But how did this binary bypass the user's initial suspicion? 
+
+The attacker disguised the initial dropper payload. Today's objective is to expose that deception by analyzing the file's raw DNA (Magic Bytes).
 
 ## The Exploit
-Malware is frequently disguised as harmless documents or images to trick users into executing them. I created a compiled C binary and disguised it as `vacation_photo.jpg`.
+Malware authors frequently bypass human defenses by masquerading executables as harmless files. To simulate the attacker's initial entry vector, I compiled a C binary and disguised it as `vacation_photo.jpg`.
 
-By using the `file` utility and generating a hex dump with `xxd vacation_photo.jpg | head -n 2`, I exposed the file's true nature. The hex signature revealed `7f45 4c46` (ELF), proving it was a compiled Linux executable rather than a valid JPEG (`ffd8 ffe0`).
+Relying on file extensions is a critical failure in triage. By utilizing the `file` utility and extracting a hex dump with `xxd vacation_photo.jpg | head -n 2`, I bypassed the surface-level disguise. The raw hex signature revealed `7f45 4c46` (ELF), proving mathematically that the file was a compiled Linux executable payload, not a valid JPEG (`ffd8 ffe0`).
