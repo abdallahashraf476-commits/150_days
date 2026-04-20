@@ -1,31 +1,11 @@
-# The 150-Day Cybersecurity & Systems Engineering Campaign 🛡️
+# Day 5: Payload Analysis & Magic Bytes
 
-## The Vision
-This repository documents a continuous, 150-day intensive technical campaign. The objective is to forge a professional-grade portfolio in cybersecurity, focusing on the intersection of low-level systems programming, malware analysis, and reverse engineering. 
+## The Investigation Continues
+In Days 1 through 4, we intercepted the malware's network traffic, hooked its library calls, extracted its static flags, and monitored its system-level attempts to steal `/etc/shadow`. But how did this binary bypass the user's initial suspicion? 
 
-Rather than isolated exercises, this challenge is a deliberate pipeline designed to build the practical, hands-on skill sets required for advanced freelance operations and dedicated security research.
+The attacker disguised the initial dropper payload. Today's objective is to expose that deception by analyzing the file's raw DNA (Magic Bytes).
 
-## Core Architecture & Technologies
-This 150-day operation relies on stripping away high-level abstractions to understand how operating systems and binaries function at their core:
-* **Languages:** C, C++, Python, Bash, SQL
-* **Environment:** Linux (Debian/Kali architecture)
-* **Binary Analysis:** Static and Dynamic analysis (`strace`, `ltrace`, `strings`, `gdb`)
-* **Network & Cloud:** Traffic interception (Wireshark/PCAP), network infrastructure, and cloud security architectures
+## The Exploit
+Malware authors frequently bypass human defenses by masquerading executables as harmless files. To simulate the attacker's initial entry vector, I compiled a C binary and disguised it as `vacation_photo.jpg`.
 
-## The Operational Pillars
-Over the course of 150 days, the challenges are categorized into four major technical pillars:
-
-### 1. Triage & Reconnaissance
-Mastering the art of initial analysis. This involves intercepting network traffic to identify malicious communication patterns and executing surface-level dynamic and static binary analysis to uncover basic vulnerabilities and hardcoded secrets.
-
-### 2. Reverse Engineering & OS Internals
-Tearing apart compiled software. This phase moves past surface analysis into decompilation, reading Assembly instructions, manipulating memory architecture, and understanding how binaries interact directly with the Linux kernel via system calls.
-
-### 3. Exploit Development & Automation
-Transitioning from defense to offense. Writing custom payloads, developing scripts to automate security auditing, and building customized C programs to test system vulnerabilities.
-
-### 4. Enterprise & Cloud Security
-Scaling up the operations. Applying low-level exploit and defense knowledge to broader network infrastructures, securing cloud environments, and developing resilient systems against modern attack vectors.
-
----
-*This repository serves as a living record of technical execution, problem-solving, and continuous daily progression.*
+Relying on file extensions is a critical failure in triage. By utilizing the `file` utility and extracting a hex dump with `xxd vacation_photo.jpg | head -n 2`, I bypassed the surface-level disguise. The raw hex signature revealed `7f45 4c46` (ELF), proving mathematically that the file was a compiled Linux executable payload, not a valid JPEG (`ffd8 ffe0`).
